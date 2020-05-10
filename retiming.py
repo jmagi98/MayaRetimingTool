@@ -30,7 +30,6 @@ class RetimingTool(object):
                     if diff < 1:
                         diff = 1
             else:
-                
                 if current < range_end:
                     # if it is not incremental, we make the difference = to the retime value.
                     diff = retime_val
@@ -44,7 +43,18 @@ class RetimingTool(object):
             current_keyframe_values.append(current)
         
         if len(new_keyframes) > 1:
-            cls.retime_keys_recursive(start_key, 0, new_keyframes) 
+            cls.retime_keys_recursive(start_key, 0, new_keyframes)
+    
+        first_key = cls.find_keyframe('first')
+        
+        if move_to_next and range_start >= first_key:
+            next_keyframe = cls.find_keyframe('next', start_key)
+            cls.set_current_time(next_keyframe)
+        elif range_end > first_key:
+            cls.set_current_time(start_key)
+        else:
+            cls.set_current_time(range_start)
+          
                 
     @classmethod
     def retime_keys_recursive(cls, current_time, index, new_keyframe_times):
@@ -104,5 +114,5 @@ class RetimingTool(object):
         
         
 if __name__ == '__main__':
-    print(RetimingTool.retime_keys(1, False, False))
+    print(RetimingTool.retime_keys(2, False, True))
     
