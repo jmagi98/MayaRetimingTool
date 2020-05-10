@@ -42,10 +42,33 @@ class RetimingTool(object):
             new_keyframes.append(new_keyframes[-1] + diff)    
             current = next_keyframe
             current_keyframe_values.append(current)
-        print(current_keyframe_values)
-        print(new_keyframes)
-                
         
+        if len(new_keyframes) > 1:
+            cls.retime_keys_recursive(start_key, 0, new_keyframes) 
+                
+    @classmethod
+    def retime_keys_recursive(cls, current_time, index, new_keyframe_times):
+        
+        # base case
+         if index >= len(new_keyframe_times):
+             return
+                 
+         
+         updated_keyframe_time = new_keyframe_times[index]
+         next = cls.find_keyframe('next', current_time)
+         
+         if updated_keyframe_time < next:
+             # update the keyframe
+             cls.change_keyframe_time(current_time, updated_keyframe_time)
+             #recusive to next keyframe
+             cls.retime_keys_recursive(next, index + 1, new_keyframe_times)
+         else:
+             # not safe to move, continue to next
+             cls.retime_keys_recursive(next, index + 1, new_keyframe_times)
+             # recusion loops back to this once it is safe to move.
+             cls.change_keyframe_time(current_time, updated_keyframe_time)
+         
+         
     
     @classmethod
     def set_current_time(cls, time):
@@ -81,5 +104,5 @@ class RetimingTool(object):
         
         
 if __name__ == '__main__':
-    print(RetimingTool.retime_keys(3, False, False))
+    print(RetimingTool.retime_keys(1, False, False))
     
